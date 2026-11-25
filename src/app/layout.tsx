@@ -10,7 +10,6 @@ export const metadata: Metadata = {
   title: "Letta Consulting | Discover what’s possible",
   description:
     "Explore career pathways, wellbeing resources and professional support with Letta Consulting.",
-  icons: { icon: "/brand/letta-consulting-logo.png" },
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
