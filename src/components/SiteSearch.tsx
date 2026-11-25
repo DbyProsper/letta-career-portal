@@ -1,7 +1,7 @@
 "use client";
 import { useLanguage } from "../lib/language";
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
+import { PageLink as Link } from "./PageLink";
 import { Search, X } from "lucide-react";
 import { careers, roles, services, slug, youthLinks } from "../data/catalog";
 const destinations = [

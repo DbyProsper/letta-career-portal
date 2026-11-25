@@ -1,5 +1,5 @@
 "use client";
-import Link from "next/link";
+import { PageLink as Link } from "./PageLink";
 import { SiteSearch } from "./SiteSearch";
 import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";

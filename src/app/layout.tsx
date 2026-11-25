@@ -1,4 +1,5 @@
 import { LanguageProvider } from "../lib/language";
+import { PageScroll } from "../components/PageLink";
 import type { Metadata } from "next";
 import "@fontsource/plus-jakarta-sans/latin-700.css";
 import "@fontsource/plus-jakarta-sans/latin-800.css";
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: `
           let theme;
@@ -23,6 +24,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         ` }} />
       </head>
       <body>
+        <PageScroll />
         <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>

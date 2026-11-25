@@ -1,5 +1,39 @@
 import { test, expect } from "@playwright/test";
 import { pathList } from "../../src/data/catalog";
+
+for (const width of [390, 1280]) {
+  test(`page links start at the top and section links reach their target at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 680 });
+    await page.goto("/resources/");
+    const offset = () => page.evaluate(() => window.scrollY);
+    await page.evaluate(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" }));
+    expect(await offset()).toBeGreaterThan(100);
+    await page.locator("header .brand").click();
+    await expect(page.locator(".hero")).toBeVisible();
+    await expect.poll(offset).toBe(0);
+
+    await page.locator('a[href="#paths"]').click();
+    await expect(page).toHaveURL(/#paths$/);
+    await expect(page.locator("#paths h2")).toBeInViewport();
+    await expect.poll(offset).toBeGreaterThan(100);
+    await page.locator("header .brand").click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect.poll(offset).toBe(0);
+
+    await page.locator("footer .foot-logo").click();
+    await expect.poll(offset).toBe(0);
+    await page.locator('footer a[href^="/careers"]').click();
+    await expect(page.locator(".workspace")).toBeVisible();
+    await expect.poll(offset).toBe(0);
+
+    if (width === 390) await page.getByRole("button", { name: "Open menu" }).click();
+    await page.locator("header").getByRole("button", { name: "Discover" }).click();
+    await page.getByRole("link", { name: "Future Mix", exact: true }).click();
+    await expect(page).toHaveURL(/#future-mix$/);
+    await expect(page.locator("#future-mix")).toBeInViewport();
+  });
+}
+
 test("exported routes are readable on mobile", async ({ page }) => {
   test.setTimeout(120000);
   await page.setViewportSize({ width: 360, height: 800 });
