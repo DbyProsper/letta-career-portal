@@ -30,20 +30,43 @@ export const slug = (value: string) =>
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/-$/, "");
-export const practitioners = [
+export type Practitioner = {
+  id: string;
+  name: string;
+  area: string;
+  about: string;
+  founder?: boolean;
+  legacyProfile?: string;
+  color: string;
+};
+export const practitioners: Practitioner[] = [
   {
+    id: "letta",
+    name: "Letta",
+    founder: true,
+    area: "Clinical Psychologist",
+    about: "Letta founded Letta Consulting and leads its practitioner team.",
+    color: "mint",
+  },
+  {
+    id: "naledi",
+    legacyProfile: "0",
     name: "Naledi M.",
     area: "Career guidance",
     about: "Explore interests, subject choices and possible study pathways.",
     color: "mint",
   },
   {
+    id: "kabelo",
+    legacyProfile: "1",
     name: "Kabelo S.",
     area: "Wellness support",
     about: "Discuss wellbeing and the kind of support you would like.",
     color: "lilac",
   },
   {
+    id: "ayesha",
+    legacyProfile: "2",
     name: "Ayesha D.",
     area: "Professional development",
     about:

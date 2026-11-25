@@ -121,7 +121,7 @@ export default function BookingFlow({
           {t(
             [
               "Choose a service",
-              "Choose a sample practitioner",
+              "Choose a practitioner",
               "Select an illustrative slot",
               "Enter demonstration details",
               "Review your request",

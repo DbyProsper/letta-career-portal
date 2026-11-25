@@ -44,7 +44,7 @@ for (const [language, code, copy] of locales) {
         .getByRole("button", { name: copy["Next"], exact: true })
         .click();
       await expect(page.locator("main h2")).toHaveText(
-        copy["Choose a sample practitioner"],
+        copy["Choose a practitioner"],
       );
       await page.goto("/resources/");
       await page

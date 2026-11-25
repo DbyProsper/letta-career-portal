@@ -1,4 +1,5 @@
 "use client";
+import { PractitionerIdentity } from "../components/PractitionerIdentity";
 import { slotLabel } from "../lib/slotLabel";
 import { useLanguage } from "../lib/language";
 import { AppointmentCalendar } from "./AppointmentCalendar";
@@ -256,7 +257,10 @@ export default function Practice({ path }: { path: string }) {
       "Pending requests",
     ],
     [enquiries.filter((e) => e.status === "New").length, "New enquiries"],
-    [3 - active.length, "Active practitioners"],
+    [
+      practitioners.filter((p) => !active.includes(p.name)).length,
+      "Active practitioners",
+    ],
     [events.length + 2, "Sample events"],
     [items.filter((a) => a.published).length, "Published resources"],
   ];
@@ -308,30 +312,24 @@ export default function Practice({ path }: { path: string }) {
       )}
       {tab === "Content Studio" && <Studio />}
       {tab === "Practitioners" && (
-        <div className="tiles">
+        <div className="tiles team-grid">
           {practitioners.map((p) => (
-            <div className="panel" key={p.name}>
-              <img
-                className="practitioner-photo"
-                src={
-                  "/images/practitioners/" +
-                  p.name.split(" ")[0].toLowerCase() +
-                  ".webp"
-                }
-                alt={t("Illustrative portrait for {name}", { name: p.name })}
-              />
-              <small>{t("Sample profile")}</small>
-              <h3>{p.name}</h3>
-              <p>{t(p.area)}</p>
+            <div
+              className={p.founder ? "panel founder-card" : "panel"}
+              key={p.name}
+            >
+              <PractitionerIdentity person={p} />
               <p>{t(p.about)}</p>
-              <details>
-                <summary>{t("Professional details")}</summary>
-                <p>
-                  {t(
-                    "Qualifications and registration are awaiting verification. Sample availability is shown inside the booking demo.",
-                  )}
-                </p>
-              </details>
+              {!p.founder && (
+                <details>
+                  <summary>{t("Professional details")}</summary>
+                  <p>
+                    {t(
+                      "Qualifications and registration are awaiting verification. Sample availability is shown inside the booking demo.",
+                    )}
+                  </p>
+                </details>
+              )}
               <label className="check">
                 <input
                   type="checkbox"

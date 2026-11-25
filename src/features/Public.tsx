@@ -1,4 +1,5 @@
 "use client";
+import { PractitionerIdentity } from "../components/PractitionerIdentity";
 import { useLanguage } from "../lib/language";
 import { useEffect, useState } from "react";
 import {
@@ -129,7 +130,7 @@ export function Services({ path }: { path: string }) {
         <h2>{t("Arrange a conversation")}</h2>
         <p>
           {t(
-            "Walk through choosing a service, a sample practitioner and a time in the booking demonstration. For a real enquiry, contact Letta Consulting directly.",
+            "Walk through choosing a service, a practitioner and a time in the booking demonstration. For a real enquiry, contact Letta Consulting directly.",
           )}
         </p>
         <div className="row">
@@ -158,30 +159,26 @@ export function Team() {
   const [i, setI] = useState(-1);
   useEffect(() => {
     const p = new URLSearchParams(location.search).get("profile");
-    if (p !== null && ["0", "1", "2"].includes(p)) setI(Number(p));
+    setI(
+      practitioners.findIndex(
+        (person) => person.id === p || person.legacyProfile === p,
+      ),
+    );
   }, []);
   return (
     <>
       <PageTitle
         group="Professional support"
-        title={t("Meet the demo team")}
-        desc="Sample profiles illustrate how you could choose a practitioner."
+        title={t("Meet the team")}
+        desc="Meet Letta, the founder of Letta Consulting, and explore the sample profiles below."
       />
-      <div className="tiles">
+      <div className="tiles team-grid">
         {practitioners.map((p, j) => (
-          <div className="panel" key={p.name}>
-            <img
-              className="practitioner-photo"
-              src={
-                "/images/practitioners/" +
-                p.name.split(" ")[0].toLowerCase() +
-                ".webp"
-              }
-              alt={t("Illustrative portrait for {name}", { name: p.name })}
-            />
-            <small>{t("Sample practitioner")}</small>
-            <h3>{p.name}</h3>
-            <p>{t(p.area)}</p>
+          <div
+            className={p.founder ? "panel founder-card" : "panel"}
+            key={p.name}
+          >
+            <PractitionerIdentity person={p} />
             <div className="row">
               <button
                 aria-expanded={j === i}

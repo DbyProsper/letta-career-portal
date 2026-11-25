@@ -1,4 +1,6 @@
 "use client";
+import { PractitionerIdentity } from "./PractitionerIdentity";
+import { HomeReveals, RevealWords } from "./HomeReveals";
 import { useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
@@ -14,6 +16,8 @@ import {
   Heart,
   MoveUpRight,
   Orbit,
+  Pause,
+  Play,
   Sparkles,
   Star,
   ChartNoAxesColumnIncreasing,
@@ -78,6 +82,7 @@ function FutureMix() {
   const { t } = useLanguage();
   const [selected, set] = useLocal<string[]>("mix", []),
     [hint, show] = useState("");
+  const [paused, setPaused] = useState(false);
   const center = useRef<HTMLDivElement>(null);
   const dragged = useRef(false);
   const reduced = useReducedMotion();
@@ -87,12 +92,24 @@ function FutureMix() {
     show(selected.includes(n.name) ? "" : n.text);
   }
   return (
-    <div className="hero-art" id="future-mix" data-mixed={selected.length > 0}>
+    <div
+      className="hero-art"
+      id="future-mix"
+      data-mixed={selected.length > 0}
+      data-paused={paused}
+    >
       <div className="art-halo" />
       <div className="orbit-line one" />
       <div className="orbit-line two" />
       <div className="dot-matrix" />
-      <div className="art-star s2">✦</div>
+      <div className="art-star s1" aria-hidden="true">
+        ✳
+      </div>
+      <div className="art-star s2" aria-hidden="true">
+        ✦
+      </div>
+      <div className="art-ring" aria-hidden="true" />
+      <div className="art-pearl" aria-hidden="true" />
       <img
         className="hero-person"
         alt={t("Smiling young woman looking ahead")}
@@ -142,12 +159,27 @@ function FutureMix() {
           whileHover={reduced ? {} : { scale: 1.045 }}
           whileDrag={{ scale: 1.07, zIndex: 8 }}
         >
-          <Icon size={23} aria-hidden="true" />
-          <strong>{t(name)}</strong>
-          <small id={"mix-prompt-" + i}>{t(prompt)}</small>
-          {selected.includes(name) && <Check className="orb-check" size={17} />}
+          <span className="orb-face">
+            <Icon size={23} aria-hidden="true" />
+            <strong>{t(name)}</strong>
+            <small id={"mix-prompt-" + i}>{t(prompt)}</small>
+            {selected.includes(name) && (
+              <Check className="orb-check" size={17} />
+            )}
+          </span>
         </motion.button>
       ))}
+      <button
+        type="button"
+        className="motion-toggle"
+        onClick={() => setPaused(!paused)}
+        aria-label={t(
+          paused ? "Resume floating motion" : "Pause floating motion",
+        )}
+        title={t(paused ? "Resume floating motion" : "Pause floating motion")}
+      >
+        {paused ? <Play size={14} /> : <Pause size={14} />}
+      </button>
       <div className="mix-note">
         <Hand size={15} />
         {t("Tap or drag to mix")}
@@ -168,7 +200,7 @@ function FutureMix() {
 export default function Home() {
   const { t } = useLanguage();
   return (
-    <>
+    <HomeReveals>
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-copy">
@@ -219,7 +251,7 @@ export default function Home() {
               <span className="tiny-line" /> {t("YOUR PATHWAYS")}
             </div>
             <h2>
-              {t("Choose your path")}
+              <RevealWords text={t("Choose your path")} />
               <i>.</i>
             </h2>
           </div>
@@ -254,9 +286,11 @@ export default function Home() {
             <span className="tiny-line" /> {t("EXPLORE YOUR OPTIONS")}
           </div>
           <h2>
-            {t("One place.")}
+            <RevealWords text={t("One place.")} />
             <br />
-            <em>{t("Many ways forward.")}</em>
+            <em>
+              <RevealWords text={t("Many ways forward.")} />
+            </em>
           </h2>
         </div>
         <div className="journey-list">
@@ -305,29 +339,22 @@ export default function Home() {
           <div>
             <div className="eyebrow">{t("GUIDANCE")}</div>
             <h2>
-              {t("Support that grows with you")}
+              <RevealWords text={t("Support that grows with you")} />
               <i>.</i>
             </h2>
           </div>
           <Btn href="/team" light>
-            {t("Meet the demo team")}
+            {t("Meet the team")}
           </Btn>
         </div>
-        <div className="tiles">
-          {practitioners.map((p, i) => (
-            <A key={p.name} className="tile" href={"/team?profile=" + i}>
-              <img
-                className="practitioner-photo"
-                src={
-                  "/images/practitioners/" +
-                  p.name.split(" ")[0].toLowerCase() +
-                  ".webp"
-                }
-                alt={t("Illustrative portrait for {name}", { name: p.name })}
-              />
-              <small>{t("Sample practitioner")}</small>
-              <h3>{p.name}</h3>
-              <p>{t(p.area)}</p>
+        <div className="tiles team-grid">
+          {practitioners.map((p) => (
+            <A
+              key={p.name}
+              className={p.founder ? "tile founder-card" : "tile"}
+              href={"/team?profile=" + p.id}
+            >
+              <PractitionerIdentity person={p} />
             </A>
           ))}
         </div>
@@ -335,7 +362,7 @@ export default function Home() {
       <section className="home-section">
         <div className="section-heading">
           <h2>
-            {t("Tools and opportunities")}
+            <RevealWords text={t("Tools and opportunities")} />
             <i>.</i>
           </h2>
         </div>
@@ -362,7 +389,7 @@ export default function Home() {
           ]}
         />
       </section>
-    </>
+    </HomeReveals>
   );
 }
 function LayoutIcon() {
