@@ -1,5 +1,36 @@
 import { test, expect } from "@playwright/test";
 
+test("the headline types, holds, erases and repeats in place", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("/");
+  const heading = page.getByRole("heading", { name: "Discover what’s possible." });
+  const samples = await heading.evaluate((el) => {
+    const animation = el.getAnimations()[0];
+    const duration = Number(animation.effect!.getTiming().duration);
+    animation.pause();
+    return [0.15, 0.5, 0.91, 1.15].map((cycle) => {
+      animation.currentTime = duration * cycle;
+      return {
+        text: Array.from(el.querySelectorAll(".type-letter"))
+          .filter((letter) => getComputedStyle(letter).opacity === "1")
+          .map((letter) => letter.textContent).join(""),
+        height: el.getBoundingClientRect().height,
+      };
+    });
+  });
+  const full = "Discoverwhat’s possible.";
+  expect(samples[0].text.length).toBeGreaterThan(0);
+  expect(samples[0].text.length).toBeLessThan(full.length);
+  expect(samples[1].text).toBe(full);
+  expect(samples[2].text.length).toBeLessThan(full.length);
+  expect(full.startsWith(samples[2].text)).toBe(true);
+  expect(samples[3]).toEqual(samples[0]);
+  expect(new Set(samples.map((s) => s.height)).size).toBe(1);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(heading.locator(".type-letter").last()).toHaveCSS("opacity", "1");
+  await expect(heading).toHaveCSS("animation-name", "none");
+});
+
 test("hero motion plays, can be paused, and keeps the mix interactive", async ({
   page,
 }) => {
@@ -20,7 +51,7 @@ test("hero motion plays, can be paused, and keeps the mix interactive", async ({
       return next.every((top, i) => Math.abs(top - initial[i]) > 1);
     })
     .toBe(true);
-  await page.getByRole("button", { name: "Pause floating motion" }).click();
+  await page.getByRole("button", { name: "Pause animations" }).click();
   await expect
     .poll(() =>
       pieces.evaluateAll((nodes) =>
@@ -34,7 +65,7 @@ test("hero motion plays, can be paused, and keeps the mix interactive", async ({
   await expect(
     page.getByRole("button", { name: "My wellbeing" }),
   ).toHaveAttribute("aria-pressed", "true");
-  await page.getByRole("button", { name: "Resume floating motion" }).click();
+  await page.getByRole("button", { name: "Resume animations" }).click();
   await expect(page.locator(".art-star.s1")).toHaveCSS(
     "animation-play-state",
     "running",

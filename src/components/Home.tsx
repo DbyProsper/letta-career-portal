@@ -1,7 +1,7 @@
 "use client";
 import { PractitionerIdentity } from "./PractitionerIdentity";
 import { HomeReveals, RevealWords } from "./HomeReveals";
-import { useRef, useState } from "react";
+import { useRef, useState, type CSSProperties } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
   ArrowDown,
@@ -174,9 +174,9 @@ function FutureMix() {
         className="motion-toggle"
         onClick={() => setPaused(!paused)}
         aria-label={t(
-          paused ? "Resume floating motion" : "Pause floating motion",
+          paused ? "Resume animations" : "Pause animations",
         )}
-        title={t(paused ? "Resume floating motion" : "Pause floating motion")}
+        title={t(paused ? "Resume animations" : "Pause animations")}
       >
         {paused ? <Play size={14} /> : <Pause size={14} />}
       </button>
@@ -197,6 +197,44 @@ function FutureMix() {
     </div>
   );
 }
+function HeroHeadline() {
+  const { t } = useLanguage();
+  const first = t("Discover");
+  const second = t("what’s") + " ";
+  const emphasis = t("possible");
+  const label = first + " " + second + emphasis + ".";
+  let length = 0;
+  function letters(text: string) {
+    return Array.from(text, (letter) => {
+      const index = ++length;
+      return (
+        <span
+          className="type-letter"
+          key={index}
+          style={{ "--letter": index } as CSSProperties}
+        >
+          {letter}
+        </span>
+      );
+    });
+  }
+  const content = (
+    <span aria-hidden="true">
+      {letters(first)}
+      <br />
+      {letters(second)}
+      <em>
+        {letters(emphasis)}
+        <span className="headline-period">{letters(".")}</span>
+      </em>
+    </span>
+  );
+  return (
+    <h1 className="hero-headline" aria-label={label} style={{ "--length": length } as CSSProperties}>
+      {content}
+    </h1>
+  );
+}
 export default function Home() {
   const { t } = useLanguage();
   return (
@@ -207,15 +245,7 @@ export default function Home() {
             <div className="hero-kicker">
               <span className="tiny-line" /> {t("CAREER & WELLNESS PORTAL")}
             </div>
-            <h1>
-              {t("Discover")}
-              <br />
-              {t("what’s")}{" "}
-              <em>
-                {t("possible")}
-                <span>.</span>
-              </em>
-            </h1>
+            <HeroHeadline />
             <p className="hero-motto">
               {t("Your mind. Your strengths. Your future.")}
             </p>

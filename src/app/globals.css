@@ -448,8 +448,45 @@ svg {
   letter-spacing: -0.065em;
   color: #078278;
 }
-.hero h1 em span {
+.hero h1 .headline-period {
   color: #e8a31b;
+}
+@property --typed-letters {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: true;
+}
+@keyframes headline-type {
+  0%, 100% { --typed-letters: 0; }
+  38%, 78% { --typed-letters: var(--length); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .hero-headline {
+    animation: headline-type 6.6s steps(var(--length), end) infinite;
+  }
+  .hero-headline .type-letter {
+    position: relative;
+    opacity: clamp(0, var(--typed-letters) - var(--letter) + 1, 1);
+  }
+  .hero-headline .type-letter::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: -0.07em;
+    bottom: 0.12em;
+    height: 0.8em;
+    border-inline-end: 0.035em solid currentColor;
+    opacity: clamp(0, 1 - abs(var(--typed-letters) - var(--letter)), 1);
+    pointer-events: none;
+  }
+  .hero:has(.hero-art[data-paused="true"]) .hero-headline {
+    animation-play-state: paused;
+  }
+  .hero:has(.hero-art[data-paused="true"]) .type-letter {
+    opacity: 1;
+  }
+  .hero:has(.hero-art[data-paused="true"]) .type-letter::after {
+    display: none;
+  }
 }
 .hero-motto {
   font: 700 clamp(1.05rem, 1.45vw, 1.44rem) / 1.5 var(--heading);
