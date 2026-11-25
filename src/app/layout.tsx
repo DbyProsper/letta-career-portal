@@ -13,7 +13,15 @@ export const metadata: Metadata = {
 };
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `
+          let theme;
+          try { theme = localStorage.getItem("letta-theme"); } catch {}
+          document.documentElement.dataset.theme = theme === "dark" || theme === "light"
+            ? theme : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        ` }} />
+      </head>
       <body>
         <LanguageProvider>{children}</LanguageProvider>
       </body>

@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { SiteSearch } from "./SiteSearch";
+import { ThemeToggle } from "./ThemeToggle";
 import { useEffect, useRef, useState } from "react";
 import {
   ArrowUpRight,
@@ -177,6 +178,7 @@ export function Header({ path }: { path: string }) {
         </nav>
         <div className="nav-actions">
           <SiteSearch />
+          <ThemeToggle />
           <label className="language">
             <Globe2 size={16} />
             <select
