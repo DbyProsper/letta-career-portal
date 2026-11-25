@@ -1,4 +1,5 @@
 "use client";
+import { slotLabel } from "../lib/slotLabel";
 import { useState } from "react";
 import {
   A,
@@ -57,6 +58,7 @@ export const questions = [
   ["What is one small thing you would like to try next?"],
 ];
 export function YouthDashboard() {
+  const { t, locale } = useLanguage();
   const [saved] = useLocal<string[]>("savedCareers", []),
     [goals] = useLocal<Goal[]>("goals", []),
     [answers] = useLocal<string[]>("answers", []),
@@ -65,7 +67,7 @@ export function YouthDashboard() {
     <>
       <PageTitle
         group="Youth portal"
-        title="Your discovery dashboard"
+        title={t("Your discovery dashboard")}
         desc="Pick up where you left off, or explore something new."
       />
       <div className="metrics">
@@ -76,42 +78,48 @@ export function YouthDashboard() {
         ].map(([v, l]) => (
           <div className="metric" key={l}>
             <b>{v}</b>
-            <span>{l}</span>
+            <span>{t(String(l))}</span>
           </div>
         ))}
       </div>
       <div className="panel">
-        <h2>Your next step</h2>
+        <h2>{t("Your next step")}</h2>
         <p>
-          {answers.length === 7
-            ? "Review your reflections and explore a career that interests you."
-            : "Get to know your interests and strengths through seven short prompts."}
+          {t(
+            answers.length === 7
+              ? "Review your reflections and explore a career that interests you."
+              : "Get to know your interests and strengths through seven short prompts.",
+          )}
         </p>
         <div className="row">
           <Btn
             href={answers.length === 7 ? "/discover/results" : "/discover/me"}
           >
-            {answers.length === 7 ? "View reflections" : "Continue Discover Me"}
+            {t(
+              answers.length === 7
+                ? "View reflections"
+                : "Continue Discover Me",
+            )}
           </Btn>
         </div>
       </div>
       <h2 className="section-title" style={{ marginTop: 25 }}>
-        Explore your workspace
+        {t("Explore your workspace")}
       </h2>
       <Cards items={youthLinks.slice(2)} />
       <div className="panel">
-        <h2>Appointment requests</h2>
+        <h2>{t("Appointment requests")}</h2>
         {bookings.length ? (
           bookings.map((b) => (
             <p key={b.id}>
-              {b.service} · {b.slot} · {b.status}
+              {t(b.service)} · {slotLabel(b.slot, locale)} · {t(b.status)}
             </p>
           ))
         ) : (
-          <p>Your simulated appointment requests will appear here.</p>
+          <p>{t("Your simulated appointment requests will appear here.")}</p>
         )}
         <A className="ink-link" href="/booking">
-          Request a session
+          {t("Request a session")}
         </A>
       </div>
     </>
@@ -137,25 +145,29 @@ export function Discovery({ path }: { path: string }) {
       <>
         <PageTitle
           group="Discover Me"
-          title="Start with yourself."
+          title={t("Start with yourself.")}
           desc="Explore the interests, strengths and values you want to bring into your future."
         />
         <div className="question">
-          <h2>Seven reflection prompts</h2>
+          <h2>{t("Seven reflection prompts")}</h2>
           <p>
-            Choose an answer in your own time. Your progress is saved in this
-            browser. Use sample information for this demonstration.
+            {t(
+              "Choose an answer in your own time. Your progress is saved in this browser. Use sample information for this demonstration.",
+            )}
           </p>
           {mix.length > 0 && (
-            <Notice>Your Future Mix · {mix.join(" + ")}</Notice>
+            <Notice>
+              {t("Your Future Mix ·")} {mix.map((item) => t(item)).join(" + ")}
+            </Notice>
           )}
           <p className="meta">
-            Educational self-discovery activity. Results are suggestions for
-            reflection.
+            {t(
+              "Educational self-discovery activity. Results are suggestions for reflection.",
+            )}
           </p>
           <div className="row">
             <Btn href="/discover/me">
-              {answers.length ? "Continue activity" : "Start activity"}
+              {t(answers.length ? "Continue activity" : "Start activity")}
             </Btn>
           </div>
         </div>
@@ -164,25 +176,31 @@ export function Discovery({ path }: { path: string }) {
   if (path.endsWith("results"))
     return (
       <>
-        <PageTitle group="Discover Me" title="Your reflection map" />
+        <PageTitle group="Discover Me" title={t("Your reflection map")} />
         {answers.filter((a) => a?.trim()).length < 7 ? (
           <div className="panel">
-            <p>Complete the seven prompts to see your reflection map.</p>
-            <Btn href="/discover/me">Continue activity</Btn>
+            <p>{t("Complete the seven prompts to see your reflection map.")}</p>
+            <Btn href="/discover/me">{t("Continue activity")}</Btn>
           </div>
         ) : (
           <>
             <div className="panel">
-              <span className="category">Activity complete</span>
-              <h2>Bring {answers[1].toLowerCase()} into your next step.</h2>
+              <span className="category">{t("Activity complete")}</span>
+              <h2>
+                {t("{strength} can guide your next step.", {
+                  strength: t(answers[1]),
+                })}
+              </h2>
               <p>
-                You picked “{answers[0]}” and “{answers[2]}”. Which careers
-                would give you a chance to do both?
+                {t(
+                  "You chose “{interest}” and “{value}”. Which careers could let you do both?",
+                  { interest: t(answers[0]), value: t(answers[2]) },
+                )}
               </p>
-              <h3>Your next experiment</h3>
+              <h3>{t("Your next experiment")}</h3>
               <p>{answers[6]}</p>
               <div className="row">
-                <Btn href="/careers">Explore Career World</Btn>
+                <Btn href="/careers">{t("Explore Career World")}</Btn>
                 <button
                   className="secondary"
                   onClick={() => {
@@ -190,7 +208,7 @@ export function Discovery({ path }: { path: string }) {
                     location.assign("/discover/me/");
                   }}
                 >
-                  Revisit answers
+                  {t("Revisit answers")}
                 </button>
               </div>
             </div>
@@ -200,15 +218,18 @@ export function Discovery({ path }: { path: string }) {
     );
   return (
     <>
-      <PageTitle group="Discover Me" title="Explore what makes you, you." />
+      <PageTitle
+        group="Discover Me"
+        title={t("Explore what makes you, you.")}
+      />
       <div className="question">
         <span className="meta">
-          Prompt {i + 1} of {questions.length}
+          {t("Prompt")} {i + 1} {t("of")} {questions.length}
         </span>
         <div className="progress">
           <span style={{ width: ((i + 1) / questions.length) * 100 + "%" }} />
         </div>
-        <h2>{prompt}</h2>
+        <h2>{t(prompt)}</h2>
         {choices.length ? (
           <div className="options">
             {choices.map((c) => (
@@ -218,18 +239,18 @@ export function Discovery({ path }: { path: string }) {
                 aria-pressed={value === c}
                 onClick={() => answer(c)}
               >
-                {c}
+                {t(c)}
               </button>
             ))}
           </div>
         ) : (
           <label className="field">
-            Your reflection
+            {t("Your reflection")}
             <textarea
               value={value}
               maxLength={500}
               onChange={(e) => answer(e.target.value)}
-              placeholder="I would like to try…"
+              placeholder={t("I would like to try…")}
             />
           </label>
         )}
@@ -242,7 +263,7 @@ export function Discovery({ path }: { path: string }) {
             {t("Back")}
           </button>
           <A className="ink-link" href="/discover">
-            Save and leave
+            {t("Save and leave")}
           </A>
           <button
             className="primary"
@@ -251,7 +272,7 @@ export function Discovery({ path }: { path: string }) {
               i === 6 ? location.assign("/discover/results/") : setIndex(i + 1)
             }
           >
-            {i === 6 ? "View reflections" : t("Next")}
+            {t(i === 6 ? "View reflections" : t("Next"))}
           </button>
         </div>
       </div>
@@ -259,6 +280,7 @@ export function Discovery({ path }: { path: string }) {
   );
 }
 export function CareerWorld({ path }: { path: string }) {
+  const { t } = useLanguage();
   const [query, search] = useState(""),
     [cat, filter] = useState("All fields"),
     [sort, order] = useState("A–Z"),
@@ -275,7 +297,7 @@ export function CareerWorld({ path }: { path: string }) {
           aria-pressed={saved.includes(id)}
           onClick={() => save((old) => toggle(old, id))}
         >
-          {saved.includes(id) ? "Saved career" : "Save career"}
+          {t(saved.includes(id) ? "Saved career" : "Save career")}
         </button>
         <button
           className="chip"
@@ -283,7 +305,7 @@ export function CareerWorld({ path }: { path: string }) {
           aria-pressed={compare.includes(id)}
           onClick={() => setCompare((old) => toggle(old, id))}
         >
-          {compare.includes(id) ? "Remove from comparison" : "Compare"}
+          {t(compare.includes(id) ? "Remove from comparison" : "Compare")}
         </button>
       </div>
     );
@@ -292,11 +314,11 @@ export function CareerWorld({ path }: { path: string }) {
     return (
       <>
         <A className="ink-link" href="/careers">
-          All careers
+          {t("All careers")}
         </A>
         <PageTitle
           group={career.category}
-          title={career.name}
+          title={t(career.name)}
           desc={career.summary}
         />
         {controls(career.id)}
@@ -306,22 +328,23 @@ export function CareerWorld({ path }: { path: string }) {
             ["Suggested subjects", career.subjects],
             ["Possible study pathways", career.study],
             ["Try it for yourself", career.activity],
-          ].map(([t, d]) => (
-            <div className="list-item" key={t}>
-              <h3>{t}</h3>
-              <p>{d}</p>
+          ].map(([label, d]) => (
+            <div className="list-item" key={label}>
+              <h3>{t(label)}</h3>
+              <p>{t(d)}</p>
             </div>
           ))}
           <p className="meta">
-            Illustrative career information. Check current programme and
-            admission requirements directly with each institution.
+            {t(
+              "Illustrative career information. Check current programme and admission requirements directly with each institution.",
+            )}
           </p>
           <details>
-            <summary>Plan your study research</summary>
+            <summary>{t("Plan your study research")}</summary>
             <p>
-              Check each prospectus for subject requirements, application dates,
-              fees and alternative entry routes. Compare university, university
-              of technology and vocational options.
+              {t(
+                "Check each prospectus for subject requirements, application dates, fees and alternative entry routes. Compare university, university of technology and vocational options.",
+              )}
             </p>
             {[
               "University of Pretoria",
@@ -336,9 +359,11 @@ export function CareerWorld({ path }: { path: string }) {
                     aria-pressed={studyIdeas.includes(name)}
                     onClick={() => setStudyIdeas((old) => toggle(old, name))}
                   >
-                    {studyIdeas.includes(name)
-                      ? "Saved to My Future"
-                      : "Save institution to research"}
+                    {t(
+                      studyIdeas.includes(name)
+                        ? "Saved to My Future"
+                        : "Save institution to research",
+                    )}
                   </button>
                 </div>
               </div>
@@ -352,7 +377,8 @@ export function CareerWorld({ path }: { path: string }) {
       (c) =>
         (cat === "All fields" || c.category === cat) &&
         (!favorites || saved.includes(c.id)) &&
-        (c.name + " " + c.category + " " + c.skills)
+        [c.name, c.category, c.skills, t(c.name), t(c.category), t(c.skills)]
+          .join(" ")
           .toLowerCase()
           .includes(query.toLowerCase()),
     )
@@ -365,50 +391,53 @@ export function CareerWorld({ path }: { path: string }) {
     <>
       <PageTitle
         group="Career discovery"
-        title="Career World"
+        title={t("Career World")}
         desc="Search career fields, save possibilities and compare up to three side by side."
       />
       <SearchField
         value={query}
         set={search}
-        placeholder="Search careers or skills"
+        placeholder={t("Search careers or skills")}
       />
       <div className="row">
         <select
-          aria-label="Career field"
+          aria-label={t("Career field")}
           value={cat}
           onChange={(e) => filter(e.target.value)}
         >
           {["All fields", ...careers.map((c) => c.category)].map((x) => (
-            <option key={x}>{x}</option>
+            <option key={x} value={x}>
+              {t(x)}
+            </option>
           ))}
         </select>
         <select
-          aria-label="Sort careers"
+          aria-label={t("Sort careers")}
           value={sort}
           onChange={(e) => order(e.target.value)}
         >
-          <option>A–Z</option>
-          <option>Z–A</option>
+          <option value="A–Z">{t("A–Z")}</option>
+          <option value="Z–A">{t("Z–A")}</option>
         </select>
         <button
           className="chip"
           aria-pressed={favorites}
           onClick={() => fav(!favorites)}
         >
-          Saved ({saved.length})
+          {t("Saved (")}
+          {saved.length})
         </button>
       </div>
       {compare.length > 0 && (
         <div className="panel">
-          <h2>Career comparison</h2>
+          <h2>{t("Career comparison")}</h2>
           <div className="table-scroll">
             <table>
               <thead>
                 <tr>
-                  <th>Career</th>
-                  <th>Subjects</th>
-                  <th>Pathway</th>
+                  <th>{t("Career")}</th>
+                  <th>{t("Subjects")}</th>
+                  <th>{t("Pathway")}</th>
                   <th />
                 </tr>
               </thead>
@@ -417,15 +446,17 @@ export function CareerWorld({ path }: { path: string }) {
                   .filter((c) => compare.includes(c.id))
                   .map((c) => (
                     <tr key={c.id}>
-                      <th>{c.name}</th>
-                      <td>{c.subjects}</td>
-                      <td>{c.study}</td>
+                      <th>{t(c.name)}</th>
+                      <td>{t(c.subjects)}</td>
+                      <td>{t(c.study)}</td>
                       <td>
                         <button
-                          aria-label={"Remove " + c.name}
+                          aria-label={t("Remove {career}", {
+                            career: t(c.name),
+                          })}
                           onClick={() => setCompare((old) => toggle(old, c.id))}
                         >
-                          Remove
+                          {t("Remove")}
                         </button>
                       </td>
                     </tr>
@@ -444,22 +475,25 @@ export function CareerWorld({ path }: { path: string }) {
               alt=""
               loading="lazy"
             />
-            <span className="category">{c.category}</span>
+            <span className="category">{t(c.category)}</span>
             <h3>
               <A className="ink-link" href={"/careers/" + c.id}>
-                {c.name}
+                {t(c.name)}
               </A>
             </h3>
-            <p>{c.summary}</p>
+            <p>{t(c.summary)}</p>
             {controls(c.id)}
           </div>
         ))}
       </div>
-      {!list.length && <p className="empty">No careers match these filters.</p>}
+      {!list.length && (
+        <p className="empty">{t("No careers match these filters.")}</p>
+      )}
     </>
   );
 }
 export function MyFuture() {
+  const { t } = useLanguage();
   const [goals, set] = useLocal<Goal[]>("goals", []),
     [saved] = useLocal<string[]>("savedCareers", []),
     [study, setStudy] = useLocal<string[]>("studyIdeas", []);
@@ -467,7 +501,7 @@ export function MyFuture() {
     <>
       <PageTitle
         group="Personal roadmap"
-        title="My Future"
+        title={t("My Future")}
         desc="Give a goal a first milestone and track each step you complete."
       />
       <form
@@ -486,16 +520,16 @@ export function MyFuture() {
         }}
       >
         <label className="field">
-          New goal
+          {t("New goal")}
           <input
             required
             pattern=".*\S.*"
             name="goal"
             maxLength={150}
-            placeholder="Explore a design qualification"
+            placeholder={t("Explore a design qualification")}
           />
         </label>
-        <button className="primary">Add goal</button>
+        <button className="primary">{t("Add goal")}</button>
       </form>
       <div className="roadmap">
         {goals.map((g) => {
@@ -504,7 +538,8 @@ export function MyFuture() {
             <div className="panel" key={g.id}>
               <h3>{g.title}</h3>
               <p>
-                {done} of {g.milestones.length} milestones complete
+                {done} {t("of")} {g.milestones.length}{" "}
+                {t("milestones complete")}
               </p>
               <div className="progress">
                 <span
@@ -561,28 +596,28 @@ export function MyFuture() {
                 }}
               >
                 <label className="field">
-                  New milestone
+                  {t("New milestone")}
                   <input required name="milestone" maxLength={140} />
                 </label>
-                <button className="secondary">Add milestone</button>
+                <button className="secondary">{t("Add milestone")}</button>
               </form>
             </div>
           );
         })}
       </div>
       <div className="panel">
-        <h2>Saved careers and study ideas</h2>
+        <h2>{t("Saved careers and study ideas")}</h2>
         {careers
           .filter((c) => saved.includes(c.id))
           .map((c) => (
             <p key={c.id}>
               <A className="ink-link" href={"/careers/" + c.id}>
-                {c.name}
+                {t(c.name)}
               </A>
             </p>
           ))}
         {study.map((s) => (
-          <p key={s}>{s}</p>
+          <p key={s}>{t(s)}</p>
         ))}
         <form
           onSubmit={(e) => {
@@ -594,16 +629,17 @@ export function MyFuture() {
           }}
         >
           <label className="field">
-            Institution or qualification
+            {t("Institution or qualification")}
             <input required name="idea" maxLength={120} />
           </label>
-          <button className="secondary">Save study idea</button>
+          <button className="secondary">{t("Save study idea")}</button>
         </form>
       </div>
     </>
   );
 }
 export function Games() {
+  const { t } = useLanguage();
   const deck = [careers[0], careers[3], careers[5], careers[6], careers[9]];
   const [level, setLevel] = useState(0),
     [score, setScore] = useState(0),
@@ -613,16 +649,16 @@ export function Games() {
     <>
       <PageTitle
         group="Future Games"
-        title="Career Match Challenge"
+        title={t("Career Match Challenge")}
         desc="Match each everyday task to a career. Play five rounds to earn your explorer badge."
       />
       <div className="question">
         {item ? (
           <>
             <span className="category">
-              Round {level + 1} / 5 · Score {score}
+              {t("Round")} {level + 1} {t("/ 5 · Score")} {score}
             </span>
-            <h2>{item.summary}</h2>
+            <h2>{t(item.summary)}</h2>
             <div className="options">
               {[item, deck[(level + 2) % 5], deck[(level + 3) % 5]]
                 .sort((a, b) => a.name.localeCompare(b.name))
@@ -636,7 +672,7 @@ export function Games() {
                       if (c.id === item.id) setScore(score + 1);
                     }}
                   >
-                    {c.name}
+                    {t(c.name)}
                   </button>
                 ))}
             </div>
@@ -644,8 +680,10 @@ export function Games() {
               <>
                 <Notice>
                   {picked === item.name
-                    ? "Correct!"
-                    : "This task matches a " + item.name.toLowerCase() + "."}
+                    ? t("Correct!")
+                    : t("This task matches this career: {career}.", {
+                        career: t(item.name),
+                      })}
                 </Notice>
                 <button
                   className="primary"
@@ -654,15 +692,17 @@ export function Games() {
                     setPicked("");
                   }}
                 >
-                  {level === 4 ? "Finish game" : "Next round"}
+                  {t(level === 4 ? "Finish game" : "Next round")}
                 </button>
               </>
             )}
           </>
         ) : (
           <>
-            <span className="category">Explorer badge earned</span>
-            <h2>You matched {score} of 5 careers.</h2>
+            <span className="category">{t("Explorer badge earned")}</span>
+            <h2>
+              {t("You matched")} {score} {t("of 5 careers.")}
+            </h2>
             <button
               className="primary"
               onClick={() => {
@@ -671,7 +711,7 @@ export function Games() {
                 setScore(0);
               }}
             >
-              Play again
+              {t("Play again")}
             </button>
           </>
         )}
@@ -680,17 +720,20 @@ export function Games() {
   );
 }
 export function Opportunities() {
+  const { t } = useLanguage();
   const [saved, set] = useLocal<string[]>("savedOpps", []),
     [filter, setFilter] = useState("All");
   return (
     <>
       <PageTitle
         group="Career discovery"
-        title="Opportunity Hub"
+        title={t("Opportunity Hub")}
         desc="Explore sample funding, training and work opportunities."
       />
       <Notice>
-        Demonstration listings · Applications are closed in this prototype.
+        {t(
+          "Demonstration listings · Applications are closed in this prototype.",
+        )}
       </Notice>
       <div className="chips">
         {["All", "Saved"].map((s) => (
@@ -700,7 +743,7 @@ export function Opportunities() {
             aria-pressed={filter === s}
             onClick={() => setFilter(s)}
           >
-            {s}
+            {t(s)}
           </button>
         ))}
       </div>
@@ -709,21 +752,23 @@ export function Opportunities() {
           .filter((o) => filter === "All" || saved.includes(o[1]))
           .map(([cat, n, d]) => (
             <div className="panel" key={n}>
-              <span className="category">{cat}</span>
-              <h3>{n}</h3>
-              <p>{d}</p>
-              <p className="meta">Illustrative closing date · 30 April 2027</p>
+              <span className="category">{t(cat)}</span>
+              <h3>{t(n)}</h3>
+              <p>{t(d)}</p>
+              <p className="meta">
+                {t("Illustrative closing date · 30 April 2027")}
+              </p>
               <button
                 className="secondary"
                 onClick={() => set((old) => toggle(old, n))}
               >
-                {saved.includes(n) ? "Remove saved" : "Save opportunity"}
+                {t(saved.includes(n) ? "Remove saved" : "Save opportunity")}
               </button>
             </div>
           ))}
       </div>
       {filter === "Saved" && !saved.length && (
-        <p className="empty">Save a listing to see it here.</p>
+        <p className="empty">{t("Save a listing to see it here.")}</p>
       )}
     </>
   );

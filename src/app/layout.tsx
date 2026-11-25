@@ -1,3 +1,4 @@
+import { LanguageProvider } from "../lib/language";
 import type { Metadata } from "next";
 import "@fontsource/plus-jakarta-sans/latin-700.css";
 import "@fontsource/plus-jakarta-sans/latin-800.css";
@@ -13,7 +14,9 @@ export const metadata: Metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <LanguageProvider>{children}</LanguageProvider>
+      </body>
     </html>
   );
 }

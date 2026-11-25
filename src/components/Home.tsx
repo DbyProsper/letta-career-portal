@@ -16,7 +16,7 @@ import {
   Orbit,
   Sparkles,
   Star,
-  Target,
+  ChartNoAxesColumnIncreasing,
 } from "lucide-react";
 import { A, Btn, Cards } from "./ui";
 import { useLanguage } from "../lib/language";
@@ -25,30 +25,34 @@ import { practitioners } from "../data/catalog";
 const dimensions = [
   {
     name: "My interests",
-    icon: Compass,
+    icon: Sparkles,
+    prompt: "What energises you?",
     text: "Explore what sparks your curiosity.",
   },
   {
     name: "My strengths",
-    icon: Star,
+    icon: ChartNoAxesColumnIncreasing,
+    prompt: "What comes naturally?",
     text: "Notice what comes naturally to you.",
   },
   {
     name: "My wellbeing",
     icon: Heart,
+    prompt: "How do you want to feel?",
     text: "Make room for what helps you feel grounded.",
   },
   {
     name: "My ambitions",
-    icon: Target,
+    icon: GraduationCap,
+    prompt: "Where could you go?",
     text: "Imagine a goal you would like to work towards.",
   },
 ];
 const paths = [
   {
-    n: "Career discovery",
-    d: "Find a direction that feels like you.",
-    href: "/discover",
+    n: "Career guidance and counselling",
+    d: "Talk through subject choices, study options and your next career step with a counsellor.",
+    href: "/services/career-guidance-and-counselling",
     icon: Compass,
     img: "career",
     className: "career",
@@ -71,6 +75,7 @@ const paths = [
   },
 ];
 function FutureMix() {
+  const { t } = useLanguage();
   const [selected, set] = useLocal<string[]>("mix", []),
     [hint, show] = useState("");
   const center = useRef<HTMLDivElement>(null);
@@ -87,29 +92,30 @@ function FutureMix() {
       <div className="orbit-line one" />
       <div className="orbit-line two" />
       <div className="dot-matrix" />
-      <div className="art-star s1">✳</div>
       <div className="art-star s2">✦</div>
       <img
         className="hero-person"
-        alt="Smiling young woman looking ahead"
+        alt={t("Smiling young woman looking ahead")}
         src="/images/hero-discovery.webp"
       />
       <div
         className="mix-target"
         ref={center}
-        aria-label="Drop a dimension here"
+        aria-label={t("Drop a dimension here")}
       >
         <Orbit size={19} />
-        <span>Your next chapter</span>
+        <span>{t("Your next chapter")}</span>
         {selected.length > 0 && <b>{selected.length}/4</b>}
       </div>
-      {dimensions.map(({ name, icon: Icon }, i) => (
+      {dimensions.map(({ name, prompt, icon: Icon }, i) => (
         <motion.button
           key={name}
           className={
             "orb orb-" + i + (selected.includes(name) ? " selected" : "")
           }
           aria-pressed={selected.includes(name)}
+          aria-label={t(name)}
+          aria-describedby={"mix-prompt-" + i}
           drag
           dragSnapToOrigin
           dragMomentum={false}
@@ -136,23 +142,22 @@ function FutureMix() {
           whileHover={reduced ? {} : { scale: 1.045 }}
           whileDrag={{ scale: 1.07, zIndex: 8 }}
         >
-          <span>
-            <Icon size={17} />
-          </span>
-          {name}
-          {selected.includes(name) && <Check size={15} />}
+          <Icon size={23} aria-hidden="true" />
+          <strong>{t(name)}</strong>
+          <small id={"mix-prompt-" + i}>{t(prompt)}</small>
+          {selected.includes(name) && <Check className="orb-check" size={17} />}
         </motion.button>
       ))}
       <div className="mix-note">
         <Hand size={15} />
-        Tap or drag to mix
+        {t("Tap or drag to mix")}
       </div>
       <div className="mix-result" aria-live="polite">
         {selected.length > 0 && (
           <>
-            <span>{hint || "Your mix is ready to explore."}</span>
+            <span>{t(hint || "Your mix is ready to explore.")}</span>
             <A href="/discover/onboarding">
-              Discover your possibilities <ArrowUpRight size={14} />
+              {t("Discover your possibilities")} <ArrowUpRight size={14} />
             </A>
           </>
         )}
@@ -168,26 +173,28 @@ export default function Home() {
         <div className="hero-inner">
           <div className="hero-copy">
             <div className="hero-kicker">
-              <span className="tiny-line" /> CAREER & WELLNESS PORTAL
+              <span className="tiny-line" /> {t("CAREER & WELLNESS PORTAL")}
             </div>
             <h1>
-              Discover
+              {t("Discover")}
               <br />
-              what’s{" "}
+              {t("what’s")}{" "}
               <em>
-                possible<span>.</span>
+                {t("possible")}
+                <span>.</span>
               </em>
             </h1>
             <p className="hero-motto">
-              Your mind. Your strengths. Your future.
+              {t("Your mind. Your strengths. Your future.")}
             </p>
             <p className="hero-description">
-              Career guidance, psychological wellness and professional support,
-              all in one place.
+              {t(
+                "Career counselling, psychological wellness and professional support, all in one place.",
+              )}
             </p>
             <div className="hero-actions">
-              <Btn href="/discover/onboarding">
-                {t("Start exploring")} <Compass size={18} />
+              <Btn href="/booking?service=Career%20guidance%20and%20counselling">
+                {t("Book career counselling")} <Compass size={18} />
               </Btn>
               <A className="underlink" href="/services">
                 {t("Our services")}
@@ -198,10 +205,10 @@ export default function Home() {
         </div>
         <div className="hero-foot">
           <a href="#paths">
-            <ArrowDown size={14} /> Scroll to explore
+            <ArrowDown size={14} /> {t("Scroll to explore")}
           </a>
           <span>
-            <span className="mini-orbit" /> Interactive Future Mix
+            <span className="mini-orbit" /> {t("Interactive Future Mix")}
           </span>
         </div>
       </section>
@@ -209,7 +216,7 @@ export default function Home() {
         <div className="section-heading">
           <div>
             <div className="eyebrow">
-              <span className="tiny-line" /> YOUR PATHWAYS
+              <span className="tiny-line" /> {t("YOUR PATHWAYS")}
             </div>
             <h2>
               {t("Choose your path")}
@@ -217,7 +224,7 @@ export default function Home() {
             </h2>
           </div>
           <A href="/portal" className="text-link">
-            View all portals <LayoutIcon />
+            {t("View all portals")} <LayoutIcon />
           </A>
         </div>
         <div className="path-grid">
@@ -230,8 +237,8 @@ export default function Home() {
                   <Icon size={21} />
                 </span>
                 <div>
-                  <h3>{n}</h3>
-                  <p>{d}</p>
+                  <h3>{t(n)}</h3>
+                  <p>{t(d)}</p>
                 </div>
               </div>
               <span className="circle-link">
@@ -244,12 +251,12 @@ export default function Home() {
       <section className="home-section journey">
         <div>
           <div className="eyebrow">
-            <span className="tiny-line" /> EXPLORE YOUR OPTIONS
+            <span className="tiny-line" /> {t("EXPLORE YOUR OPTIONS")}
           </div>
           <h2>
-            One place.
+            {t("One place.")}
             <br />
-            <em>Many ways forward.</em>
+            <em>{t("Many ways forward.")}</em>
           </h2>
         </div>
         <div className="journey-list">
@@ -284,8 +291,8 @@ export default function Home() {
               <A href={String(url)} key={String(n)}>
                 <Icon />
                 <div>
-                  <b>{String(n)}</b>
-                  <p>{String(d)}</p>
+                  <b>{t(String(n))}</b>
+                  <p>{t(String(d))}</p>
                 </div>
                 <ArrowUpRight size={18} />
               </A>
@@ -296,13 +303,14 @@ export default function Home() {
       <section className="home-section">
         <div className="section-heading">
           <div>
-            <div className="eyebrow">GUIDANCE</div>
+            <div className="eyebrow">{t("GUIDANCE")}</div>
             <h2>
-              Support that grows with you<i>.</i>
+              {t("Support that grows with you")}
+              <i>.</i>
             </h2>
           </div>
           <Btn href="/team" light>
-            Meet the demo team
+            {t("Meet the demo team")}
           </Btn>
         </div>
         <div className="tiles">
@@ -315,11 +323,11 @@ export default function Home() {
                   p.name.split(" ")[0].toLowerCase() +
                   ".webp"
                 }
-                alt={"Illustrative portrait for " + p.name}
+                alt={t("Illustrative portrait for {name}", { name: p.name })}
               />
-              <small>Sample practitioner</small>
+              <small>{t("Sample practitioner")}</small>
               <h3>{p.name}</h3>
-              <p>{p.area}</p>
+              <p>{t(p.area)}</p>
             </A>
           ))}
         </div>
@@ -327,7 +335,8 @@ export default function Home() {
       <section className="home-section">
         <div className="section-heading">
           <h2>
-            Tools and opportunities<i>.</i>
+            {t("Tools and opportunities")}
+            <i>.</i>
           </h2>
         </div>
         <Cards

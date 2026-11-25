@@ -1,5 +1,9 @@
 export const services = [
   [
+    "Career guidance and counselling",
+    "Explore career options, subject choices and study pathways with a counsellor.",
+  ],
+  [
     "Professional Psychological Therapy",
     "Support for adolescents, adults, couples and families.",
   ],

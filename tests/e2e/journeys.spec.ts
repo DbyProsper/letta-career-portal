@@ -53,7 +53,7 @@ test("booking flows into practice and individual dashboards", async ({
 }) => {
   await page.goto("/booking/");
   await page
-    .getByRole("button", { name: "Career guidance", exact: true })
+    .getByRole("button", { name: "Career guidance and counselling", exact: true })
     .click();
   await page.getByRole("button", { name: "Next", exact: true }).click();
   await page.getByRole("button", { name: "Help me choose" }).click();

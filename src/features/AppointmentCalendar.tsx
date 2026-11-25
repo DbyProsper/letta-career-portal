@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "../lib/language";
 import { useEffect, useState } from "react";
 import type { Booking } from "../lib/store";
 const dateLabel = new Intl.DateTimeFormat("en-ZA", {
@@ -8,12 +9,13 @@ const dateLabel = new Intl.DateTimeFormat("en-ZA", {
   year: "numeric",
   timeZone: "UTC",
 });
-const shortLabel = new Intl.DateTimeFormat("en-ZA", {
-  weekday: "short",
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
-});
+const shortLabel = (locale: string) =>
+  new Intl.DateTimeFormat(locale + "-ZA", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 type View = "Day" | "Week" | "Month";
 function shift(date: Date, days: number) {
   const result = new Date(date);
@@ -21,6 +23,7 @@ function shift(date: Date, days: number) {
   return result;
 }
 export function AppointmentCalendar({ bookings }: { bookings: Booking[] }) {
+  const { t, locale } = useLanguage();
   const [focus, setFocus] = useState<Date | null>(null),
     [view, setView] = useState<View>("Week");
   useEffect(() => {
@@ -61,7 +64,7 @@ export function AppointmentCalendar({ bookings }: { bookings: Booking[] }) {
   }
   return (
     <section className="panel calendar">
-      <h2>Appointment calendar</h2>
+      <h2>{t("Appointment calendar")}</h2>
       <div className="row">
         {(["Day", "Week", "Month"] as const).map((v) => (
           <button
@@ -70,23 +73,23 @@ export function AppointmentCalendar({ bookings }: { bookings: Booking[] }) {
             aria-pressed={view === v}
             onClick={() => setView(v)}
           >
-            {v}
+            {t(v)}
           </button>
         ))}
       </div>
       <div className="pager">
         <button className="secondary" onClick={() => step(-1)}>
-          Previous
+          {t("Previous")}
         </button>
         <b>
-          {first.toLocaleDateString("en-ZA", {
+          {first.toLocaleDateString(locale + "-ZA", {
             month: "long",
             year: "numeric",
             timeZone: "UTC",
           })}
         </b>
         <button className="secondary" onClick={() => step(1)}>
-          Next
+          {t("Next")}
         </button>
       </div>
       <div className={"calendar-days " + view.toLowerCase()}>
@@ -99,14 +102,14 @@ export function AppointmentCalendar({ bookings }: { bookings: Booking[] }) {
           );
           return (
             <div key={i}>
-              <b>{shortLabel.format(d)}</b>
+              <b>{shortLabel(locale).format(d)}</b>
               {entries.map((b) => (
                 <span key={b.id}>
-                  {b.slot.split(" · ")[1]} · {b.name}
+                  {t(b.slot.split(" · ")[1])} · {b.name}
                 </span>
               ))}
               {view === "Day" && !entries.length && (
-                <p>No requests scheduled for this day.</p>
+                <p>{t("No requests scheduled for this day.")}</p>
               )}
             </div>
           );

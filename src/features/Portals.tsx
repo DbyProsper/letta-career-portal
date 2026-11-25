@@ -1,14 +1,17 @@
 "use client";
+import { slotLabel } from "../lib/slotLabel";
+import { useLanguage } from "../lib/language";
 import { useState } from "react";
 import { A, Btn, Cards, Notice, PageTitle } from "../components/ui";
 import { programs, roles } from "../data/catalog";
 import { Booking, Enquiry, useLocal } from "../lib/store";
 export function PortalIndex() {
+  const { t } = useLanguage();
   return (
     <>
       <PageTitle
         group="Letta Consulting"
-        title="Find your portal"
+        title={t("Find your portal")}
         desc="Choose the workspace that fits what you want to do today."
       />
       <Cards
@@ -35,6 +38,7 @@ export function EnquiryForm({
   role: string;
   options: readonly string[];
 }) {
+  const { t } = useLanguage();
   const [, save] = useLocal<Enquiry[]>("enquiries", []),
     [status, setStatus] = useState("");
   return (
@@ -63,22 +67,26 @@ export function EnquiryForm({
         f.reset();
       }}
     >
-      <h2>{role === "Parent" ? "Request a workshop" : "Make an enquiry"}</h2>
-      <p>Use fictional details for this demonstration.</p>
+      <h2>{t(role === "Parent" ? "Request a workshop" : "Make an enquiry")}</h2>
+      <p>{t("Use fictional details for this demonstration.")}</p>
       <label className="field">
-        {role === "Parent" ? "Sample family name" : "Sample organisation name"}
+        {t(
+          role === "Parent" ? "Sample family name" : "Sample organisation name",
+        )}
         <input name="organisation" required pattern=".*\S.*" maxLength={100} />
       </label>
       <label className="field">
-        Programme
+        {t("Programme")}
         <select name="programme">
           {options.map((n) => (
-            <option key={n}>{n}</option>
+            <option key={n} value={n}>
+              {t(n)}
+            </option>
           ))}
         </select>
       </label>
       <label className="field">
-        Demo contact email
+        {t("Demo contact email")}
         <input
           required
           name="email"
@@ -86,12 +94,13 @@ export function EnquiryForm({
           placeholder="contact@example.com"
         />
       </label>
-      <button className="primary">Submit demo request</button>
-      {status && <Notice>{status}</Notice>}
+      <button className="primary">{t("Submit demo request")}</button>
+      {status && <Notice>{t(status)}</Notice>}
     </form>
   );
 }
 export function RoleDashboard({ path }: { path: string }) {
+  const { t, locale } = useLanguage();
   const role = path.split("/")[1];
   const [bookings, save] = useLocal<Booking[]>("bookings", []),
     [prefs, set] = useLocal("preferences", {
@@ -107,18 +116,19 @@ export function RoleDashboard({ path }: { path: string }) {
       <>
         <PageTitle
           group="Individual portal"
-          title="My appointments"
+          title={t("My appointments")}
           desc="Review your sample appointment requests and communication preferences."
         />
         <div className="panel">
-          <h2>Appointment history</h2>
+          <h2>{t("Appointment history")}</h2>
           {bookings.length ? (
             bookings.map((b) => (
               <div className="list-item" key={b.id}>
-                <span className="category">{b.status}</span>
-                <h3>{b.service}</h3>
+                <span className="category">{t(b.status)}</span>
+                <h3>{t(b.service)}</h3>
                 <p>
-                  {b.name} · {b.slot} · {b.practitioner} · {b.format}
+                  {b.name} · {slotLabel(b.slot, locale)} · {t(b.practitioner)} ·{" "}
+                  {t(b.format)}
                 </p>
                 {b.status !== "Cancelled" && (
                   <button
@@ -131,23 +141,23 @@ export function RoleDashboard({ path }: { path: string }) {
                       )
                     }
                   >
-                    Cancel demo request
+                    {t("Cancel demo request")}
                   </button>
                 )}
               </div>
             ))
           ) : (
-            <p>Your sample requests will appear here.</p>
+            <p>{t("Your sample requests will appear here.")}</p>
           )}
           <div className="row">
-            <Btn href="/booking">Book a session</Btn>
+            <Btn href="/booking">{t("Book a session")}</Btn>
             <Btn href="/resources" light>
-              View resources
+              {t("View resources")}
             </Btn>
           </div>
         </div>
         <div className="panel">
-          <h2>Communication preferences</h2>
+          <h2>{t("Communication preferences")}</h2>
           {(["reminders", "resources"] as const).map((k) => (
             <label className="check" key={k}>
               <input
@@ -155,10 +165,14 @@ export function RoleDashboard({ path }: { path: string }) {
                 checked={prefs[k]}
                 onChange={(e) => set({ ...prefs, [k]: e.target.checked })}
               />
-              {k === "reminders" ? "Appointment reminders" : "Resource updates"}
+              {t(
+                k === "reminders"
+                  ? "Appointment reminders"
+                  : "Resource updates",
+              )}
             </label>
           ))}
-          <small>Demonstration settings · Delivery is disabled.</small>
+          <small>{t("Demonstration settings · Delivery is disabled.")}</small>
         </div>
       </>
     );
@@ -167,46 +181,50 @@ export function RoleDashboard({ path }: { path: string }) {
       <>
         <PageTitle
           group="Parent & guardian portal"
-          title="Support their next step"
+          title={t("Support their next step")}
           desc="Explore family resources, workshops and the information shared with you."
         />
         <div className="split">
           <div className="panel">
-            <span className="category">Simulated child profile</span>
-            <h2>Alex Demo</h2>
-            <p>Grade 10 · Subject selection</p>
-            <h3>Sharing preferences</h3>
+            <span className="category">{t("Simulated child profile")}</span>
+            <h2>{t("Alex Demo")}</h2>
+            <p>{t("Grade 10 · Subject selection")}</p>
+            <h3>{t("Sharing preferences")}</h3>
             <label className="check">
               <input
                 type="checkbox"
                 checked={consent}
                 onChange={(e) => setConsent(e.target.checked)}
               />
-              Demonstrate sharing a career activity summary
+              {t("Demonstrate sharing a career activity summary")}
             </label>
             {consent && (
-              <Notice>Sample summary · Alex explored two career fields.</Notice>
+              <Notice>
+                {t("Sample summary · Alex explored two career fields.")}
+              </Notice>
             )}
             <p className="meta">
-              Private reflections and counselling records are excluded from
-              family summaries.
+              {t(
+                "Private reflections and counselling records are excluded from family summaries.",
+              )}
             </p>
           </div>
           <div className="panel">
-            <h2>For families</h2>
+            <h2>{t("For families")}</h2>
             <details>
-              <summary>Talk about subject choices</summary>
+              <summary>{t("Talk about subject choices")}</summary>
               <p>
-                Ask which subjects your child enjoys and what they hope to try.
-                Explore a career profile together and compare possible pathways.
+                {t(
+                  "Ask which subjects your child enjoys and what they hope to try. Explore a career profile together and compare possible pathways.",
+                )}
               </p>
             </details>
             <A href="/careers" className="ink-link">
-              Browse study pathways
+              {t("Browse study pathways")}
             </A>
             <div className="row">
               <Btn href="/booking" light>
-                Request guidance
+                {t("Request guidance")}
               </Btn>
             </div>
           </div>
@@ -232,7 +250,7 @@ export function RoleDashboard({ path }: { path: string }) {
     <>
       <PageTitle
         group={group + " portal"}
-        title={title}
+        title={t(title)}
         desc={
           school
             ? "Explore programmes for learners and send a sample partnership enquiry."
@@ -240,26 +258,28 @@ export function RoleDashboard({ path }: { path: string }) {
         }
       />
       <div className="panel">
-        <h2>{school ? "School programmes" : "Organisational services"}</h2>
+        <h2>{t(school ? "School programmes" : "Organisational services")}</h2>
         {opts.map((s, i) => (
           <details key={s}>
-            <summary>{s}</summary>
+            <summary>{t(s)}</summary>
             <p>
-              {school
-                ? [
-                    "A guided introduction to career fields and daily tasks.",
-                    "Explore links between school subjects and possible pathways.",
-                    "Build a practical checklist for the year after matric.",
-                    "Discuss study choices and preparing for campus.",
-                    "Practise applications, interviews and CV preparation.",
-                    "Discuss everyday wellbeing and finding support.",
-                  ][i]
-                : [
-                    "Explore preventative support for employees.",
-                    "Plan a workplace wellbeing programme.",
-                    "Discuss communication and team development workshops.",
-                    "Ask about the business's medico-legal service offering.",
-                  ][i]}
+              {t(
+                school
+                  ? [
+                      "A guided introduction to career fields and daily tasks.",
+                      "Explore links between school subjects and possible pathways.",
+                      "Build a practical checklist for the year after matric.",
+                      "Discuss study choices and preparing for campus.",
+                      "Practise applications, interviews and CV preparation.",
+                      "Discuss everyday wellbeing and finding support.",
+                    ][i]
+                  : [
+                      "Explore preventative support for employees.",
+                      "Plan a workplace wellbeing programme.",
+                      "Discuss communication and team development workshops.",
+                      "Ask about the business's medico-legal service offering.",
+                    ][i],
+              )}
             </p>
           </details>
         ))}
@@ -267,11 +287,13 @@ export function RoleDashboard({ path }: { path: string }) {
       <EnquiryForm role={group} options={opts} />
       {school && (
         <div className="panel">
-          <h2>Sample school programme</h2>
-          <p>Demo Academy · Career Discovery Day</p>
-          <p>Workshop invoice DEMO-001 · {invoice}</p>
+          <h2>{t("Sample school programme")}</h2>
+          <p>{t("Demo Academy · Career Discovery Day")}</p>
+          <p>
+            {t("Workshop invoice DEMO-001 ·")} {t(invoice)}
+          </p>
           <details>
-            <summary>Programme feedback</summary>
+            <summary>{t("Programme feedback")}</summary>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -284,31 +306,31 @@ export function RoleDashboard({ path }: { path: string }) {
               }}
             >
               <label className="field">
-                Sample feedback
+                {t("Sample feedback")}
                 <textarea name="feedback" required maxLength={400} />
               </label>
-              <button className="secondary">Save feedback</button>
+              <button className="secondary">{t("Save feedback")}</button>
             </form>
             {feedback.map((v, i) => (
               <p className="list-item" key={i}>
-                {v}
+                {t(v)}
               </p>
             ))}
           </details>
         </div>
       )}
       <div className="panel">
-        <h2>Programme requests</h2>
+        <h2>{t("Programme requests")}</h2>
         {enquiries.some((e) => e.role === group) ? (
           enquiries
             .filter((e) => e.role === group)
             .map((e) => (
               <p className="list-item" key={e.id}>
-                {e.programme} · {e.organisation} · {e.status}
+                {t(e.programme)} · {t(e.organisation)} · {t(e.status)}
               </p>
             ))
         ) : (
-          <p>Your organisation's simulated requests will appear here.</p>
+          <p>{t("Your organisation's simulated requests will appear here.")}</p>
         )}
       </div>
     </>

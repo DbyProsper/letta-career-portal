@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "../lib/language";
 import { useState } from "react";
 import { Cards, PageTitle, Notice } from "../components/ui";
 import { useLocal } from "../lib/store";
@@ -57,13 +58,14 @@ export async function downloadPDF(
   doc.save(name + ".pdf");
 }
 export function Toolkit({ path }: { path: string }) {
+  const { t } = useLanguage();
   if (path.endsWith("cv-builder")) return <CV />;
   if (path.endsWith("cover-letter-builder")) return <Letter />;
   return (
     <>
       <PageTitle
         group="Practical tools"
-        title="Career Toolkit"
+        title={t("Career Toolkit")}
         desc="Prepare application documents with sample details. Drafts stay in this browser."
       />
       <Cards
@@ -84,6 +86,7 @@ export function Toolkit({ path }: { path: string }) {
   );
 }
 function CV() {
+  const { t } = useLanguage();
   const [name, setName] = useLocal("cvName", ""),
     [email, setEmail] = useLocal("cvEmail", ""),
     [template, setTemplate] = useLocal("cvStyle", "Modern"),
@@ -98,7 +101,7 @@ function CV() {
     <>
       <PageTitle
         group="Career Toolkit"
-        title="CV Builder"
+        title={t("CV Builder")}
         desc="Use fictional details to build your CV. Your preview updates as you type."
       />
       <div className="split">
@@ -109,7 +112,13 @@ function CV() {
             try {
               await downloadPDF(
                 "Sample CV",
-                [{ title: name, text: email }, ...sections],
+                [
+                  { title: name, text: email },
+                  ...sections.map((section) => ({
+                    ...section,
+                    title: t(section.title),
+                  })),
+                ],
                 template,
               );
               setStatus("CV PDF exported.");
@@ -119,7 +128,7 @@ function CV() {
           }}
         >
           <label className="field">
-            Full name
+            {t("Full name")}
             <input
               required
               pattern=".*\S.*"
@@ -129,7 +138,7 @@ function CV() {
             />
           </label>
           <label className="field">
-            Email
+            {t("Email")}
             <input
               required
               type="email"
@@ -138,21 +147,23 @@ function CV() {
             />
           </label>
           <label className="field">
-            CV template
+            {t("CV template")}
             <select
               value={template}
               onChange={(e) => setTemplate(e.target.value)}
             >
               {["Modern", "Classic", "Editorial"].map((s) => (
-                <option key={s}>{s}</option>
+                <option key={s} value={s}>
+                  {t(s)}
+                </option>
               ))}
             </select>
           </label>
           {sections.map((s, i) => (
             <details key={s.title} open={i === 0 || undefined}>
-              <summary>{s.title}</summary>
+              <summary>{t(s.title)}</summary>
               <label className="field">
-                {s.title} details
+                {t(s.title)} {t("details")}
                 <textarea
                   maxLength={2500}
                   value={s.text}
@@ -172,7 +183,7 @@ function CV() {
                   disabled={i === 0}
                   onClick={() => move(i, -1)}
                 >
-                  Move up
+                  {t("Move up")}
                 </button>
                 <button
                   type="button"
@@ -180,28 +191,30 @@ function CV() {
                   disabled={i === sections.length - 1}
                   onClick={() => move(i, 1)}
                 >
-                  Move down
+                  {t("Move down")}
                 </button>
               </div>
             </details>
           ))}
           <div className="row">
-            <button className="primary">Export CV as PDF</button>
+            <button className="primary">{t("Export CV as PDF")}</button>
           </div>
-          {status && <Notice>{status}</Notice>}
+          {status && <Notice>{t(status)}</Notice>}
         </form>
         <article
           className={"paper " + template.toLowerCase()}
-          aria-label="Live CV preview"
+          aria-label={t("Live CV preview")}
         >
-          <span className="category">{template} preview</span>
-          <h2>{name || "Your name"}</h2>
-          <p>{email || "Your email address"}</p>
+          <span className="category">
+            {t(template)} {t("preview")}
+          </span>
+          <h2>{name || t("Your name")}</h2>
+          <p>{email || t("Your email address")}</p>
           {sections
             .filter((s) => s.text)
             .map((s) => (
               <div key={s.title}>
-                <h3>{s.title}</h3>
+                <h3>{t(s.title)}</h3>
                 <p>{s.text}</p>
               </div>
             ))}
@@ -211,6 +224,7 @@ function CV() {
   );
 }
 function Letter() {
+  const { t } = useLanguage();
   const [form, setForm] = useLocal("letterForm", {
       type: "Employment",
       company: "",
@@ -224,7 +238,7 @@ function Letter() {
     <>
       <PageTitle
         group="Career Toolkit"
-        title="Cover Letter Builder"
+        title={t("Cover Letter Builder")}
         desc="Generate a first draft, edit the wording and export a PDF."
       />
       <div className="split">
@@ -233,22 +247,24 @@ function Letter() {
           onSubmit={(e) => {
             e.preventDefault();
             setDraft(
-              "Dear " +
-                form.company.trim() +
-                " team,\n\nI am writing to apply for " +
-                form.position.trim() +
-                " as a " +
-                form.type.toLowerCase() +
-                " opportunity.\n\n" +
-                form.experience.trim() +
-                "\n\nI would welcome the opportunity to discuss how I could contribute. Thank you for considering my application.\n\nKind regards,\n" +
-                form.name.trim(),
+              [
+                t("Dear {company} team,", { company: form.company.trim() }),
+                t("I am applying for {position} ({type}).", {
+                  position: form.position.trim(),
+                  type: t(form.type),
+                }),
+                form.experience.trim(),
+                t(
+                  "I would welcome the opportunity to discuss how I could contribute. Thank you for considering my application.",
+                ),
+                t("Kind regards,") + "\n" + form.name.trim(),
+              ].join("\n\n"),
             );
             setStatus("Draft generated. Edit the preview before exporting.");
           }}
         >
           <label className="field">
-            Application type
+            {t("Application type")}
             <select
               value={form.type}
               onChange={(e) => setForm({ ...form, type: e.target.value })}
@@ -260,7 +276,9 @@ function Letter() {
                 "Learnership",
                 "Scholarship or bursary",
               ].map((v) => (
-                <option key={v}>{v}</option>
+                <option key={v} value={v}>
+                  {t(v)}
+                </option>
               ))}
             </select>
           </label>
@@ -273,7 +291,7 @@ function Letter() {
             ] as const
           ).map(([k, l]) => (
             <label className="field" key={k}>
-              {l}
+              {t(l)}
               <input
                 required
                 pattern=".*\S.*"
@@ -284,17 +302,17 @@ function Letter() {
             </label>
           ))}
           <button className="primary">
-            {draft ? "Regenerate draft" : "Generate draft"}
+            {t(draft ? "Regenerate draft" : "Generate draft")}
           </button>
         </form>
         <div className="paper">
-          <h2>Letter preview</h2>
+          <h2>{t("Letter preview")}</h2>
           <label className="field">
-            Editable draft
+            {t("Editable draft")}
             <textarea
               rows={13}
               value={draft}
-              placeholder="Your draft will appear here."
+              placeholder={t("Your draft will appear here.")}
               onChange={(e) => setDraft(e.target.value)}
             />
           </label>
@@ -304,7 +322,7 @@ function Letter() {
             onClick={async () => {
               try {
                 await downloadPDF("Sample cover letter", [
-                  { title: "Cover letter", text: draft },
+                  { title: t("Cover letter"), text: draft },
                 ]);
                 setStatus("Letter PDF exported.");
               } catch {
@@ -312,11 +330,11 @@ function Letter() {
               }
             }}
           >
-            Export letter as PDF
+            {t("Export letter as PDF")}
           </button>
         </div>
       </div>
-      {status && <Notice>{status}</Notice>}
+      {status && <Notice>{t(status)}</Notice>}
     </>
   );
 }

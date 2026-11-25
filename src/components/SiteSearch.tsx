@@ -1,4 +1,5 @@
 "use client";
+import { useLanguage } from "../lib/language";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Search, X } from "lucide-react";
@@ -6,7 +7,7 @@ import { careers, roles, services, slug, youthLinks } from "../data/catalog";
 const destinations = [
   ...youthLinks.map(([name, href]) => ({ name, href, group: "Youth portal" })),
   ...roles.map(([name, href]) => ({
-    name: name + " portal",
+    name,
     href,
     group: "Workspaces",
   })),
@@ -32,6 +33,7 @@ const destinations = [
   ].map(([name, href]) => ({ name, href, group: "Tools and resources" })),
 ];
 export function SiteSearch() {
+  const { t } = useLanguage();
   const ref = useRef<HTMLDialogElement>(null);
   const [query, setQuery] = useState("");
   function show() {
@@ -50,7 +52,8 @@ export function SiteSearch() {
   }, []);
   const list = destinations
     .filter((item) =>
-      (item.name + " " + item.group)
+      [item.name, item.group, t(item.name), t(item.group)]
+        .join(" ")
         .toLowerCase()
         .includes(query.trim().toLowerCase()),
     )
@@ -59,7 +62,7 @@ export function SiteSearch() {
     <>
       <button
         className="global-search-trigger"
-        aria-label="Search portal"
+        aria-label={t("Search portal")}
         onClick={show}
       >
         <Search size={19} />
@@ -74,9 +77,9 @@ export function SiteSearch() {
       >
         <div>
           <div className="section-heading">
-            <h2 id="search-title">Find your next step</h2>
+            <h2 id="search-title">{t("Find your next step")}</h2>
             <button
-              aria-label="Close search"
+              aria-label={t("Close search")}
               onClick={() => ref.current?.close()}
             >
               <X />
@@ -87,8 +90,8 @@ export function SiteSearch() {
             <input
               autoFocus
               type="search"
-              aria-label="Search the portal"
-              placeholder="Search careers, services or tools"
+              aria-label={t("Search the portal")}
+              placeholder={t("Search careers, services or tools")}
               value={query}
               onChange={(e) => setQuery(e.target.value)}
             />
@@ -100,13 +103,13 @@ export function SiteSearch() {
                 href={item.href}
                 onClick={() => ref.current?.close()}
               >
-                <b>{item.name}</b>
-                <small>{item.group}</small>
+                <b>{t(item.name)}</b>
+                <small>{t(item.group)}</small>
               </Link>
             ))}
             {!list.length && (
               <p className="empty">
-                No matches. Try “CV”, “wellness” or “school”.
+                {t("No matches. Try “CV”, “wellness” or “school”.")}
               </p>
             )}
           </div>

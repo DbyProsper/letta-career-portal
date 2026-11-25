@@ -1,11 +1,12 @@
 "use client";
+import { slotLabel } from "../lib/slotLabel";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import { Btn, Notice, PageTitle } from "../components/ui";
 import { practitioners, services } from "../data/catalog";
 import { Booking, useLocal } from "../lib/store";
 import { useLanguage } from "../lib/language";
-const options = ["Career guidance", ...services.map((s) => s[0])];
+const options: string[] = services.map((s) => s[0]);
 const stages = ["Service", "Practitioner", "Time", "Details", "Review"];
 export function sampleSlots() {
   const slots: string[] = [];
@@ -36,7 +37,7 @@ export default function BookingFlow({
 }: {
   confirmation?: boolean;
 }) {
-  const { t } = useLanguage();
+  const { t, locale } = useLanguage();
   const [inactive] = useLocal<string[]>("inactivePractitioners", []);
   const availablePractitioners = practitioners.filter(
     (person) => !inactive.includes(person.name),
@@ -56,7 +57,8 @@ export default function BookingFlow({
     const params = new URLSearchParams(location.search);
     const p = params.get("practitioner"),
       s = params.get("service");
-    if (options.includes(s || "")) setService(s!);
+    if (s === "Career guidance") setService(options[0]);
+    else if (options.includes(s || "")) setService(s!);
     if (practitioners.some((x) => x.name === p)) setPractitioner(p!);
   }, []);
   if (confirmation) {
@@ -65,27 +67,30 @@ export default function BookingFlow({
       <>
         <PageTitle
           group="Booking demonstration"
-          title={last ? "Request saved" : "Appointment requests"}
+          title={t(last ? "Request saved" : "Appointment requests")}
         />
         <div className="panel form-panel">
           {last ? (
             <>
               <Notice>
-                Simulated request recorded. No appointment has been booked or
-                message sent.
+                {t(
+                  "Simulated request recorded. No appointment has been booked or message sent.",
+                )}
               </Notice>
-              <h2>{last.service}</h2>
+              <h2>{t(last.service)}</h2>
               <p>
-                {last.practitioner} · {last.format}
+                {last.practitioner} · {t(last.format)}
               </p>
-              <p>{last.slot}</p>
-              <p>Status · {last.status}</p>
+              <p>{slotLabel(last.slot, locale)}</p>
+              <p>
+                {t("Status ·")} {t(last.status)}
+              </p>
               <div className="row">
-                <Btn href="/individual/dashboard">View my requests</Btn>
+                <Btn href="/individual/dashboard">{t("View my requests")}</Btn>
               </div>
             </>
           ) : (
-            <Btn href="/booking">Start a booking request</Btn>
+            <Btn href="/booking">{t("Start a booking request")}</Btn>
           )}
         </div>
       </>
@@ -102,26 +107,26 @@ export default function BookingFlow({
     <>
       <PageTitle
         group="Professional support"
-        title="Book a session"
+        title={t("Book a session")}
         desc="Walk through a sample consultation request. Use fictional contact details."
       />
       <div className="question">
         <span className="category">
-          Step {step + 1} of 5 · {stages[step]}
+          {t("Step")} {step + 1} {t("of 5 ·")} {t(stages[step])}
         </span>
         <div className="progress">
           <span style={{ width: (step + 1) * 20 + "%" }} />
         </div>
         <h2>
-          {
+          {t(
             [
               "Choose a service",
               "Choose a sample practitioner",
               "Select an illustrative slot",
               "Enter demonstration details",
               "Review your request",
-            ][step]
-          }
+            ][step],
+          )}
         </h2>
         <form
           onSubmit={(e) => {
@@ -171,10 +176,10 @@ export default function BookingFlow({
                     [setService, setPractitioner, setSlot][step](c)
                   }
                 >
-                  {c}
+                  {step === 2 ? slotLabel(c, locale) : t(c)}
                   {step === 1 &&
                     availablePractitioners[i] &&
-                    " · " + availablePractitioners[i].area}
+                    " · " + t(availablePractitioners[i].area)}
                 </button>
               ))}
             </div>
@@ -189,7 +194,7 @@ export default function BookingFlow({
                   maxLength={80}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Alex Demo"
+                  placeholder={t("Alex Demo")}
                 />
               </label>
               <label className="field">
@@ -203,13 +208,13 @@ export default function BookingFlow({
                 />
               </label>
               <label className="field">
-                Session format
+                {t("Session format")}
                 <select
                   value={format}
                   onChange={(e) => setFormat(e.target.value)}
                 >
-                  <option>Online</option>
-                  <option>In person</option>
+                  <option value="Online">{t("Online")}</option>
+                  <option value="In person">{t("In person")}</option>
                 </select>
               </label>
             </>
@@ -217,17 +222,18 @@ export default function BookingFlow({
           {step === 4 && (
             <>
               <p>
-                {service} with {practitioner}
+                {t(service)} {t("with")} {t(practitioner)}
               </p>
               <p>
-                {slot} · {format}
+                {slotLabel(slot, locale)} · {t(format)}
               </p>
               <p>
                 {name} · {email}
               </p>
               <Notice>
-                Demo only. Contact details are used for this preview. You can
-                cancel the sample request in your individual portal.
+                {t(
+                  "Demo only. Contact details are used for this preview. You can cancel the sample request in your individual portal.",
+                )}
               </Notice>
             </>
           )}
@@ -249,7 +255,7 @@ export default function BookingFlow({
               {t("Back")}
             </button>
             <button className="primary">
-              {step === 4 ? "Submit simulated request" : t("Next")}
+              {t(step === 4 ? "Submit simulated request" : t("Next"))}
             </button>
           </div>
         </form>

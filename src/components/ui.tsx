@@ -46,11 +46,11 @@ export function PageTitle({
       {group && (
         <span className="eyebrow">
           <Compass size={15} />
-          {group}
+          {t(group)}
         </span>
       )}
       <h1>{t(title)}</h1>
-      {desc && <p>{desc}</p>}
+      {desc && <p>{t(desc)}</p>}
     </div>
   );
 }
@@ -62,7 +62,7 @@ export function Cards({ items }: { items: readonly (readonly string[])[] }) {
         <Link key={title} className="tile" href={href}>
           <ArrowUpRight size={18} />
           <h3>{t(title)}</h3>
-          {desc && <p>{desc}</p>}
+          {desc && <p>{t(desc)}</p>}
         </Link>
       ))}
     </div>
@@ -124,17 +124,17 @@ export function Header({ path }: { path: string }) {
   return (
     <header ref={ref} className="top">
       <a className="skip" href="#main">
-        Skip to content
+        {t("Skip to content")}
       </a>
       <div className="nav-inner">
         <Link className="brand" href="/" onClick={close}>
           <img
             src="/brand/letta-consulting-logo.png"
-            alt="Letta Consulting home"
+            alt={t("Letta Consulting home")}
           />
         </Link>
         <nav
-          aria-label="Main navigation"
+          aria-label={t("Main navigation")}
           className={mobile ? "main-nav expanded" : "main-nav"}
         >
           <Link
@@ -180,12 +180,14 @@ export function Header({ path }: { path: string }) {
           <label className="language">
             <Globe2 size={16} />
             <select
-              aria-label="Language"
+              aria-label={t("Language")}
               value={language}
               onChange={(e) => set(e.target.value)}
             >
               {languages.map((l) => (
-                <option key={l}>{l}</option>
+                <option key={l} value={l}>
+                  {t(l)}
+                </option>
               ))}
             </select>
           </label>
@@ -195,7 +197,7 @@ export function Header({ path }: { path: string }) {
           </Link>
           <button
             className="menu"
-            aria-label={mobile ? "Close menu" : "Open menu"}
+            aria-label={t(mobile ? "Close menu" : "Open menu")}
             aria-expanded={mobile}
             onClick={() => setMobile(!mobile)}
           >
@@ -207,6 +209,7 @@ export function Header({ path }: { path: string }) {
   );
 }
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer>
       <div className="footer-in">
@@ -214,50 +217,51 @@ export function Footer() {
           <Link href="/" className="foot-logo">
             <img
               src="/brand/letta-consulting-logo.png"
-              alt="Letta Consulting"
+              alt={t("Letta Consulting")}
             />
           </Link>
-          <p>Real support. Brighter futures.</p>
+          <p>{t("Real support. Brighter futures.")}</p>
         </div>
         <div>
-          <b>Explore</b>
-          <Link href="/careers">Career World</Link>
-          <Link href="/wellness">Wellness Space</Link>
-          <Link href="/resources">Resource library</Link>
+          <b>{t("Explore")}</b>
+          <Link href="/careers">{t("Career World")}</Link>
+          <Link href="/wellness">{t("Wellness Space")}</Link>
+          <Link href="/resources">{t("Resource library")}</Link>
         </div>
         <div>
-          <b>Get support</b>
-          <Link href="/services">Our services</Link>
-          <Link href="/team">Practitioner profiles</Link>
-          <Link href="/portal">Choose a portal</Link>
+          <b>{t("Get support")}</b>
+          <Link href="/services">{t("Our services")}</Link>
+          <Link href="/team">{t("Practitioner profiles")}</Link>
+          <Link href="/portal">{t("Choose a portal")}</Link>
         </div>
         <div>
-          <b>Contact</b>
+          <b>{t("Contact")}</b>
           <a href="mailto:info@lettaconsulting.co.za">
             info@lettaconsulting.co.za
           </a>
           <a href="tel:+27120042803">+27 12 004 2803</a>
-          <Link href="/contact">Contact details</Link>
+          <Link href="/contact">{t("Contact details")}</Link>
         </div>
       </div>
       <div className="foot-base">
-        <span>Letta Consulting · Interactive prototype</span>
+        <span>{t("Letta Consulting · Interactive prototype")}</span>
         <div>
-          <Link href="/privacy">Privacy</Link>
-          <Link href="/terms">Terms</Link>
+          <Link href="/privacy">{t("Privacy")}</Link>
+          <Link href="/terms">{t("Terms")}</Link>
         </div>
       </div>
     </footer>
   );
 }
 export function RolePicker({ path }: { path: string }) {
+  const { t } = useLanguage();
   return (
     <div className="rolepicker">
       <LayoutGrid size={17} />
       <label>
-        Demo portal{" "}
+        {t("Demo portal")}{" "}
         <select
-          aria-label="Switch demo portal"
+          aria-label={t("Switch demo portal")}
           value={
             roles.find((r) => r[1] === path)?.[1] ||
             (["practice", "individual", "parent", "school", "corporate"].some(
@@ -272,7 +276,7 @@ export function RolePicker({ path }: { path: string }) {
         >
           {roles.map(([n, u]) => (
             <option key={u} value={u}>
-              {n}
+              {t(n)}
             </option>
           ))}
         </select>
@@ -289,13 +293,14 @@ export function SearchField({
   set: (v: string) => void;
   placeholder: string;
 }) {
+  const { t } = useLanguage();
   return (
     <label className="search">
       <Search size={19} />
       <input
         type="search"
-        aria-label={placeholder}
-        placeholder={placeholder}
+        aria-label={t(placeholder)}
+        placeholder={t(placeholder)}
         value={value}
         onChange={(e) => set(e.target.value)}
       />

@@ -2,7 +2,7 @@
 import { MotionConfig } from "motion/react";
 import Home from "./Home";
 import { A, Footer, Header, RolePicker } from "./ui";
-import { practiceTabs, slug, youthLinks } from "../data/catalog";
+import { practiceTabs, services, slug, youthLinks } from "../data/catalog";
 import { useLanguage } from "../lib/language";
 import {
   CareerWorld,
@@ -17,6 +17,22 @@ import { PortalIndex, RoleDashboard } from "../features/Portals";
 import Practice from "../features/Practice";
 import BookingFlow from "../features/Booking";
 import { Toolkit } from "../features/Toolkit";
+const pageNames: Record<string, string> = {
+  "/services": "Services",
+  "/booking": "Book a session",
+  "/booking/confirmation": "Request saved",
+  "/contact": "Contact",
+  "/about": "About",
+  "/team": "Practitioner profiles",
+  "/resources": "Resource library",
+  "/events": "Events",
+  "/terms": "Terms",
+  "/privacy": "Privacy",
+  "/portal": "Find your portal",
+  ...Object.fromEntries(
+    services.map(([name]) => ["/services/" + slug(name), name]),
+  ),
+};
 function Content({ path: p }: { path: string }) {
   if (p === "/") return <Home />;
   if (p === "/discover") return <YouthDashboard />;
@@ -60,14 +76,16 @@ export default function Portal({ path }: { path: string }) {
       <Header path={path} />
       {workspace ? (
         <div className="workspace">
-          <nav className="sidebar" aria-label="Workspace navigation">
+          <nav className="sidebar" aria-label={t("Workspace navigation")}>
             <RolePicker path={path} />
             <h2>
-              {practice
-                ? "Practice team"
-                : role
-                  ? "My workspace"
-                  : "Youth workspace"}
+              {t(
+                practice
+                  ? "Practice team"
+                  : role
+                    ? "My workspace"
+                    : "Youth workspace",
+              )}
             </h2>
             {links.map(([n, p]) => (
               <A
@@ -92,8 +110,7 @@ export default function Portal({ path }: { path: string }) {
         >
           {path !== "/" && (
             <div className="crumb">
-              <A href="/">{t("Home")}</A> /{" "}
-              {path.split("/").filter(Boolean).at(-1)?.replaceAll("-", " ")}
+              <A href="/">{t("Home")}</A> / {t(pageNames[path] || "Home")}
             </div>
           )}
           <Content path={path} />

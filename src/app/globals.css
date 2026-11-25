@@ -566,64 +566,103 @@ svg {
   font-size: 2.5rem;
   color: var(--teal);
 }
+
 .orb {
+  --orb-size: clamp(6.1rem, 8.4vw, 8.25rem);
   position: absolute;
   z-index: 4;
+  width: var(--orb-size);
+  height: var(--orb-size);
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 8px;
-  font-weight: 700;
-  font-size: 0.88rem;
-  border-radius: 40px;
-  padding: 7px 13px 7px 7px;
-  box-shadow: 0 6px 12px #1c4e3c18;
-  border: 1px solid #fff9;
+  gap: 0.22rem;
+  padding: 9px;
+  color: white;
+  text-align: center;
+  line-height: 1.05;
+  border: 1px solid #fffc;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at 30% 20%, var(--glint), transparent 43%),
+    radial-gradient(circle at 39% 28%, var(--mid) 12%, var(--shade) 78%);
+  box-shadow:
+    inset 0 0 9px #fffffb66,
+    inset -4px -6px 11px #12373822,
+    0 8px 17px #264e4825;
+  text-shadow: 0 1px 4px #073e5170;
   touch-action: none;
   user-select: none;
   cursor: grab;
-  white-space: nowrap;
+}
+.orb svg {
+  width: clamp(18px, 1.8vw, 25px);
+  height: auto;
+  pointer-events: none;
+}
+.orb strong {
+  font-family: var(--body);
+  font-weight: 700;
+  font-size: clamp(0.72rem, 0.89vw, 0.9rem);
+  text-transform: uppercase;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+}
+.orb small {
+  font-size: clamp(0.66rem, 0.76vw, 0.75rem);
+  line-height: 1.12;
+  max-width: 95%;
+  text-wrap: balance;
 }
 .orb:active {
   cursor: grabbing;
 }
-.orb span {
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  background: #fff9;
-}
 .orb-0 {
-  left: 0;
-  top: 32%;
-  background: #c3eee1;
-  color: #12564e;
-  rotate: -8deg;
+  --glint: #8beee9;
+  --mid: #0baaa9;
+  --shade: #007575;
+  left: 4%;
+  top: 15%;
 }
 .orb-1 {
+  --glint: #d6f778;
+  --mid: #9fc832;
+  --shade: #547b10;
   right: 0;
-  top: 22%;
-  background: #ffdd90;
-  color: #644507;
-  rotate: 8deg;
+  top: 24%;
+  color: #193603;
+  text-shadow: 0 1px 2px #efffc966;
 }
 .orb-2 {
-  left: 3%;
-  bottom: 22%;
-  background: #e4d8f6;
-  color: #55416b;
-  rotate: 5deg;
+  --glint: #d7bbfa;
+  --mid: #a67ad8;
+  --shade: #654099;
+  left: 0;
+  bottom: 18%;
 }
 .orb-3 {
-  right: -1%;
-  bottom: 29%;
-  background: #c7e3fa;
-  color: #204766;
-  rotate: -7deg;
+  --glint: #abddfa;
+  --mid: #4c99ce;
+  --shade: #255b96;
+  right: 3%;
+  bottom: 13%;
 }
 .orb.selected {
-  outline: 2px solid var(--teal);
+  outline: 2px solid #174e44;
+  outline-offset: 3px;
+}
+.orb .orb-check {
+  position: absolute;
+  right: 5%;
+  top: 5%;
+  background: #104a40;
+  color: white;
+  border: 2px solid white;
+  width: 22px;
+  height: 22px;
+  padding: 2px;
+  border-radius: 50%;
 }
 .mix-target {
   position: absolute;
@@ -1267,13 +1306,7 @@ th {
     gap: 24px;
     grid-template-columns: 175px minmax(0, 1fr);
   }
-  .orb {
-    font-size: 0.78rem;
-  }
-  .orb span {
-    width: 27px;
-    height: 27px;
-  }
+
   .hero-art {
     min-height: 400px;
   }
@@ -1442,21 +1475,31 @@ th {
     width: 80%;
     left: 10%;
   }
+  .orb {
+    --orb-size: clamp(76px, 23vw, 99px);
+    padding: 6px;
+  }
   .orb-0 {
-    left: 1%;
-    top: 25%;
+    left: 0;
+    top: 8%;
   }
   .orb-1 {
-    right: 1%;
-    top: 16%;
+    right: 0;
+    top: 19%;
   }
   .orb-2 {
     left: 0;
-    bottom: 27%;
+    bottom: 14%;
   }
   .orb-3 {
-    right: 0;
-    bottom: 30%;
+    right: 1%;
+    bottom: 8%;
+  }
+  .orb small {
+    display: none;
+  }
+  .orb strong {
+    max-width: 90%;
   }
   .mix-note {
     bottom: 1%;
@@ -1565,8 +1608,126 @@ th {
     0 0 22px #9fe6b9;
 }
 @media (max-width: 430px) {
-  .top .nav-inner { padding-inline: 12px; gap: 4px; }
-  .nav-inner .brand img { width: clamp(86px, 27vw, 112px); }
-  .nav-inner .nav-actions { gap: 2px; }
-  .nav-inner .book { max-width: 117px; overflow: hidden; display:block; text-overflow:ellipsis; }
+  .top .nav-inner {
+    padding-inline: 12px;
+    gap: 4px;
+  }
+  .nav-inner .brand img {
+    width: clamp(86px, 27vw, 112px);
+  }
+  .nav-inner .nav-actions {
+    gap: 2px;
+  }
+  .nav-inner .book {
+    max-width: 117px;
+    overflow: hidden;
+    display: block;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .path-grid > a,
+    .journey-list > a,
+    .home-section > .section-heading {
+      animation: path-arrival linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 90%;
+    }
+    .path-grid > a:nth-child(2) {
+      --entry-angle: 2deg;
+    }
+    .path-grid > a:nth-child(3) {
+      --entry-angle: -2deg;
+    }
+    .hero .art-halo {
+      animation: halo-recede linear both;
+      animation-timeline: view();
+      animation-range: exit 0% exit 90%;
+    }
+    @keyframes path-arrival {
+      from {
+        translate: 0 25px;
+        rotate: var(--entry-angle, 0deg);
+        opacity: 0.7;
+      }
+      to {
+        translate: 0 0;
+        rotate: 0deg;
+        opacity: 1;
+      }
+    }
+    @keyframes halo-recede {
+      to {
+        translate: 0 32px;
+        scale: 0.94;
+      }
+    }
+  }
+}
+@media (max-width: 660px) {
+  .path-section .section-heading {
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .section-heading .text-link {
+    white-space: normal;
+  }
+  .hero-art .mix-target {
+    max-width: 45%;
+    white-space: normal;
+    line-height: 1.15;
+    text-align: center;
+    bottom: 7%;
+    gap: 5px;
+    padding: 7px 9px;
+  }
+  .hero-art .mix-target svg {
+    width: 15px;
+  }
+  .hero-art .mix-result:not(:empty) {
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  .hero-art .orb-2 {
+    bottom: 20%;
+  }
+  .hero-art .orb-3 {
+    bottom: 19%;
+  }
+  html:not([lang="en"]) .orb strong {
+    text-transform: none;
+  }
+  .hero-actions {
+    flex-wrap: wrap;
+    row-gap: 10px;
+  }
+}
+.nav-inner .main-nav {
+  min-width: 0;
+}
+.workspace main,
+.page-title,
+.section-heading,
+.panel,
+.tile,
+.path-content,
+.journey,
+.footer-in {
+  overflow-wrap: anywhere;
+}
+@media (min-width: 901px) and (max-width: 1180px) {
+  html:not([lang="en"]) .nav-inner {
+    padding-inline: 16px;
+    gap: 8px;
+  }
+  html:not([lang="en"]) .main-nav {
+    gap: 8px;
+    font-size: 0.78rem;
+  }
+  html:not([lang="en"]) .nav-actions {
+    gap: 6px;
+  }
 }
